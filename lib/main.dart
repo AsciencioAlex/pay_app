@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'dart:typed_data';
+
 
 void main() {
   runApp(MyApp());
@@ -9,6 +12,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Payment App',
+      theme: ThemeData(
+        primaryColor: Color(0xFF8B1D9E),
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+        colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.white),
+      ),
       home: HomePage(),
     );
   }
@@ -23,7 +31,17 @@ class HomePage extends StatelessWidget {
         children: [
           // Header Section with Purple Background
           Container(
-            color: Color(0xFF8B1D9E), // Purple background color
+            decoration: BoxDecoration(
+              color: Color(0xFF8B1D9E), // Purple background color
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 10,
+                  offset: Offset(0, 5),
+                ),
+              ],
+            ),
             padding: EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,23 +53,36 @@ class HomePage extends StatelessWidget {
                       backgroundColor: Colors.white,
                       child: Text(
                         'PM',
-                        style: TextStyle(color: Colors.black),
+                        style: TextStyle(
+                            color: Colors.black, fontWeight: FontWeight.bold),
                       ),
                     ),
-                    Icon(
-                      Icons.more_vert,
-                      color: Colors.white,
+                    IconButton(
+                      icon: Icon(Icons.history, color: Colors.white),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => TransactionHistoryPage()),
+                        );
+                      },
                     ),
                   ],
                 ),
                 SizedBox(height: 16.0),
                 Text(
                   'Dash Wallet',
-                  style: TextStyle(color: Colors.white, fontSize: 24),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold),
                 ),
                 Text(
                   'S\$ XXXX.XX',
-                  style: TextStyle(color: Colors.white, fontSize: 28),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.w600),
                 ),
                 SizedBox(height: 16.0),
                 Row(
@@ -70,11 +101,11 @@ class HomePage extends StatelessWidget {
           Expanded(
             child: Container(
               color: Colors.white,
-              padding: EdgeInsets.all(16.0),
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
               child: GridView.count(
                 crossAxisCount: 3,
-                crossAxisSpacing: 10.0,
-                mainAxisSpacing: 10.0,
+                crossAxisSpacing: 16.0,
+                mainAxisSpacing: 16.0,
                 children: [
                   buildGridItem('assets/digital.png', 'Digital bank'),
                   buildGridItem('assets/invest.png', 'Invest'),
@@ -110,18 +141,25 @@ class HomePage extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 5,
+                  offset: Offset(0, 3),
+                ),
+              ],
             ),
             padding: EdgeInsets.all(8.0),
             child: Image.asset(
               imagePath,
-              width: 40,
-              height: 40,
+              width: 50,
+              height: 50,
             ),
           ),
           SizedBox(height: 8.0),
           Text(
             label,
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -132,16 +170,23 @@ class HomePage extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Image.asset(
-          assetPath,
-          width: 50, // Adjust the width as needed
-          height: 50, // Adjust the height as needed
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: EdgeInsets.all(12.0),
+          child: Image.asset(
+            assetPath,
+            width: 40, // Adjust the width as needed
+            height: 40, // Adjust the height as needed
+          ),
         ),
         SizedBox(height: 8.0),
         Text(
           label,
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 14),
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
       ],
     );
@@ -149,6 +194,8 @@ class HomePage extends StatelessWidget {
 }
 
 class SendMoneyPage extends StatelessWidget {
+  final TextEditingController _controller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -156,30 +203,16 @@ class SendMoneyPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
-          elevation: 0,
+          elevation: 2,
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
-          title: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: 50, // Constrain the height
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Send Money', style: TextStyle(color: Colors.black)),
-                Flexible(
-                  child: Text(
-                    'Current Dash Balance: S\$ XXXX.XX',
-                    style: TextStyle(color: Colors.grey, fontSize: 14),
-                    overflow: TextOverflow.ellipsis, // Avoid text overflow
-                  ),
-                ),
-              ],
-            ),
+          title: Text(
+            'Send Money',
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
           ),
           bottom: TabBar(
             labelColor: Color(0xFF8B1D9E), // Tab active color
@@ -218,7 +251,6 @@ class SendMoneyPage extends StatelessWidget {
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold)),
                     SizedBox(height: 10),
-                    // Using other methods
                     Divider(),
                     ListTile(
                       leading: Icon(Icons.account_balance),
@@ -230,9 +262,7 @@ class SendMoneyPage extends StatelessWidget {
                     ),
                     Divider(),
                     ListTile(
-                      leading: Image.asset('assets/paynow.png',
-                          width:
-                              24), // You need to add the PayNow icon to your assets
+                      leading: Image.asset('assets/paynow.png', width: 24),
                       title: Text('PayNow'),
                       trailing: Icon(Icons.arrow_forward_ios),
                       onTap: () {
@@ -269,15 +299,12 @@ class SendMoneyPage extends StatelessWidget {
                 ),
               ),
             ),
-            // Remit Overseas Tab (You can add the content here for this tab)
             Center(child: Text('Remit Overseas content goes here')),
           ],
         ),
       ),
     );
   }
-
-  final TextEditingController _controller = TextEditingController();
 }
 
 class PaymentDetailsPage extends StatefulWidget {
@@ -287,32 +314,26 @@ class PaymentDetailsPage extends StatefulWidget {
 
 class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
   String? _selectedAccountDetail = 'Mobile number';
-  TextEditingController _controller = TextEditingController();
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _phoneController = TextEditingController();
+  TextEditingController _amountController = TextEditingController();
+  TextEditingController _messageController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        elevation: 0,
+        elevation: 2,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Send with PayNow', style: TextStyle(color: Colors.black)),
-            Flexible(
-              child: Text(
-                'Current Dash Balance: S\$ XXXX.XX',
-                style: TextStyle(color: Colors.grey, fontSize: 14),
-                overflow: TextOverflow.ellipsis, // Avoid text overflow
-              ),
-            ),
-          ],
+        title: Text(
+          'Send with PayNow',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
       ),
       body: Padding(
@@ -325,28 +346,45 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
               style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.purple),
+                  color: Color(0xFF8B1D9E)),
             ),
             SizedBox(height: 20),
             buildRadioButton('Mobile number'),
             if (_selectedAccountDetail == 'Mobile number')
-              TextField(
-                controller: _controller,
-                decoration: InputDecoration(
-                  hintText: 'Enter phone number or name here',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide.none,
+              Column(
+                children: [
+                  TextField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      hintText: 'Enter name here',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide.none,
+                      ),
+                      fillColor: Colors.grey[200],
+                      filled: true,
+                    ),
                   ),
-                  fillColor: Colors.grey[200],
-                  filled: true,
-                ),
+                  SizedBox(height: 10),
+                  TextField(
+                    controller: _phoneController,
+                    decoration: InputDecoration(
+                      hintText: 'Enter phone number here',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide.none,
+                      ),
+                      fillColor: Colors.grey[200],
+                      filled: true,
+                    ),
+                  ),
+                ],
               ),
             SizedBox(height: 10),
             buildRadioButton('NRIC/FIN'),
             if (_selectedAccountDetail == 'NRIC/FIN')
               TextField(
-                controller: _controller,
+                controller: _phoneController,
                 decoration: InputDecoration(
                   hintText: 'Enter NRIC/FIN here',
                   border: OutlineInputBorder(
@@ -361,7 +399,7 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
             buildRadioButton('Unique Entity Number (UEN)'),
             if (_selectedAccountDetail == 'Unique Entity Number (UEN)')
               TextField(
-                controller: _controller,
+                controller: _phoneController,
                 decoration: InputDecoration(
                   hintText: 'Enter UEN here',
                   border: OutlineInputBorder(
@@ -376,7 +414,7 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
             buildRadioButton('Virtual Payment Address (VPA)'),
             if (_selectedAccountDetail == 'Virtual Payment Address (VPA)')
               TextField(
-                controller: _controller,
+                controller: _phoneController,
                 decoration: InputDecoration(
                   hintText: 'Enter VPA here',
                   border: OutlineInputBorder(
@@ -387,24 +425,76 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
                   filled: true,
                 ),
               ),
+            SizedBox(height: 20),
+            Text(
+              'Enter Amount',
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF8B1D9E)),
+            ),
+            TextField(
+              controller: _amountController,
+              decoration: InputDecoration(
+                hintText: '0.00',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide.none,
+                ),
+                fillColor: Colors.grey[200],
+                filled: true,
+              ),
+              keyboardType: TextInputType.number,
+            ),
+            SizedBox(height: 10),
+            Text(
+              'Message (optional)',
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF8B1D9E)),
+            ),
+            TextField(
+              controller: _messageController,
+              decoration: InputDecoration(
+                hintText: 'Enter message here',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide.none,
+                ),
+                fillColor: Colors.grey[200],
+                filled: true,
+              ),
+              maxLength: 150,
+            ),
             Spacer(),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.purple, // Button color
+                backgroundColor: _amountController.text.isNotEmpty
+                    ? Color(0xFF8B1D9E)
+                    : Colors.grey, // Disable button if amount is empty
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
               ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ReceiptPage(
-                            amount: "80.00", // Example amount
-                            recipient:
-                                _controller.text, // Pass recipient name/number
-                          )),
-                );
-              },
-              child: Text('Next', style: TextStyle(color: Colors.white)),
+              onPressed: _amountController.text.isNotEmpty
+                  ? () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ReceiptPage(
+                                  amount: _amountController.text,
+                                  recipient: _nameController.text,
+                                  phone: _phoneController.text,
+                                )),
+                      );
+                    }
+                  : null, // Disable the button when amount is empty
+              child: Text('Next',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold)),
             ),
           ],
         ),
@@ -414,14 +504,15 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
 
   Widget buildRadioButton(String value) {
     return ListTile(
-      title: Text(value),
+      title: Text(value, style: TextStyle(fontWeight: FontWeight.bold)),
       leading: Radio<String>(
         value: value,
         groupValue: _selectedAccountDetail,
         onChanged: (String? newValue) {
           setState(() {
             _selectedAccountDetail = newValue;
-            _controller.clear(); // Clear the text field when switching
+            _phoneController.clear(); // Clear the text field when switching
+            _nameController.clear(); // Clear the name field when switching
           });
         },
       ),
@@ -432,8 +523,10 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
 class ReceiptPage extends StatelessWidget {
   final String amount;
   final String recipient;
+  final String phone;
 
-  ReceiptPage({required this.amount, required this.recipient});
+  ReceiptPage(
+      {required this.amount, required this.recipient, required this.phone});
 
   @override
   Widget build(BuildContext context) {
@@ -465,7 +558,14 @@ class ReceiptPage extends StatelessWidget {
           padding: EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: Offset(0, 5),
+              ),
+            ],
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -478,24 +578,28 @@ class ReceiptPage extends StatelessWidget {
                     color: Colors.black),
               ),
               SizedBox(height: 20),
-              buildReceiptItem(
-                  'PayNow Mobile', recipient), // Display recipient here
+              buildReceiptItem('PayNow Mobile', phone),
               buildReceiptItem(
                   'PayNow Reference', '20240629100267023457P0176649'),
-              buildReceiptItem('Description',
-                  'Send to $recipient'), // Display recipient in description
+              buildReceiptItem('Description', 'Send to $recipient'),
               buildReceiptItem('Fee', 'S\$ 1.00'),
               buildReceiptItem('Transaction ID', '115985196'),
               SizedBox(height: 20),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple, // Button color
+                  backgroundColor: Color(0xFF8B1D9E),
                   padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                 ),
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                child: Text('Done', style: TextStyle(color: Colors.white)),
+                child: Text('Done',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -510,13 +614,126 @@ class ReceiptPage extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: Colors.black)),
+          Text(label,
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
           Flexible(
             child: Text(value,
                 style: TextStyle(
                     color: Colors.black, fontWeight: FontWeight.bold)),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class TransactionHistoryPage extends StatelessWidget {
+  static List<Map<String, String>> transactions = [
+    {
+      "date": "20 Aug 2024",
+      "title": "Mcdonald's (bgv)",
+      "time": "04:45 PM",
+      "amount": "-S\$ 8.00"
+    },
+    {
+      "date": "19 Aug 2024",
+      "title": "Sent To 6598465466",
+      "time": "07:26 PM",
+      "amount": "-S\$ 10.80"
+    },
+    {
+      "date": "19 Aug 2024",
+      "title": "Shengsiong@yishun845",
+      "time": "04:49 PM",
+      "amount": "-S\$ 1.41"
+    },
+    {
+      "date": "19 Aug 2024",
+      "title": "Received Dash Top-Up",
+      "time": "04:46 PM",
+      "amount": "S\$ 20.00"
+    },
+    {
+      "date": "16 Aug 2024",
+      "title": "Shengsiong@yishun845",
+      "time": "05:12 PM",
+      "amount": "-S\$ 7.06"
+    },
+    {
+      "date": "14 Aug 2024",
+      "title": "Mcdonalds 930040",
+      "time": "02:19 PM",
+      "amount": "-S\$ 8.10"
+    },
+  ];
+
+  static void addTransaction(
+      BuildContext context, String title, String amount) {
+    String currentDate = DateFormat('dd MMM yyyy').format(DateTime.now());
+    String currentTime = DateFormat('hh:mm a').format(DateTime.now());
+
+    transactions.insert(0, {
+      "date": currentDate,
+      "title": title,
+      "time": currentTime,
+      "amount": amount,
+    });
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => TransactionHistoryPage()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("History"),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.more_vert, color: Colors.black),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      body: ListView.builder(
+        itemCount: transactions.length,
+        itemBuilder: (context, index) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (index == 0 ||
+                  transactions[index]['date'] !=
+                      transactions[index - 1]['date'])
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 8.0, horizontal: 16.0),
+                  child: Text(
+                    transactions[index]['date']!,
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ListTile(
+                title: Text(transactions[index]['title']!,
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text(transactions[index]['time']!),
+                trailing: Text(transactions[index]['amount']!,
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+              Divider(),
+            ],
+          );
+        },
       ),
     );
   }
